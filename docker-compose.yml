@@ -1,0 +1,52 @@
+version: '1'
+
+services:
+  pgsql:
+    image: 'postgres:15'
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+    volumes:
+      - './create-tables.sql:/docker-entrypoint-initdb.d/10-create-tables.sql'
+    networks:
+      - bookstore
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - '-q'
+        - '-d'
+        - '${DB_DATABASE}'
+        - '-U'
+        - '${DB_USERNAME}'
+      interval: 5s
+      retries: 5
+      timeout: 5s
+
+  bookstore:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookstore
+    ports:
+      - '8082:8081'
+    networks:
+      - bookstore
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    environment:
+      DB_HOST: pgsql
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+networks:
+  bookstore:
+    driver: bridge
