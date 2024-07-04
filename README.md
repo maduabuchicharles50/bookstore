@@ -14,7 +14,7 @@ a user to manage books, authors and genre .
   - Download the file for your Operating System and confirm that Docker was installed successfully by running the command `docker --version ` on your termianl to see the verion of docker that was installed.
 - Open your terminal from the directory where you downloaded or cloned the project and enter into the folder named `bookstore`.
 - In the above terminal run the following command: `docker compose up --build`.
-**NOTE:** Please ensure you are connected to the internet while running this command to enable Docker download the reuired docker image and build the Dockerfile in the project.
+**NOTE:** Please ensure you are connected to the internet while running this command to enable Docker download the required docker image and build the Dockerfile in the project.
 - After Docker builds successfully, we should have the Database service listening on `localhost:5432` and the Backend(Springboot) service listening on `localhost:8081`.
 
 ### 3. Test the Application
@@ -98,7 +98,7 @@ Sample Response
 
 ### 2. Author 
 > **POST:** `http://localhost:8081/api/authors`
- - Adds a new Autor to the bookstore.
+ - Adds a new Author to the bookstore.
 ```
 Sample Request
 {
@@ -114,33 +114,63 @@ Sample Response
     "contact": "08123567832"
 }
 ```
-> **PUT:** `http://localhost:8081/api/return/{bookId}/patron/{patronId}`
- - Records the return of a borrowed book by a particular Patron specified by the patronId. **NOTE:** This can only be done by the authenticated Librarian that borrowed the book to the Patron.
+> **PUT:** `http://localhost:8081/api/authors/{id}`
+ - Updates the Authors profile
 ```
+Sample Request
+{
+    "name": "ike was updated",
+    "contact": "08145673890"
+}
+
 Sample Response
 {
     "id": 1,
-    "borrowDate": "2024-04-21",
-    "returnDate": "2024-04-21",
-    "book": {
-        "id": 1,
-        "title": "Things fall",
-        "author": "Chinua Achebe",
-        "isbn": "8900-2920-2729-2828",
-        "publicationYear": "2016"
+    "name": "ike was updated",
+    "contact": "08145673890"
+}
+
+```
+> **GET ALL:** `http://localhost:8081/api/authors`
+ - Returns the list of Authors.
+```
+{
+    "_embedded": {
+        "items": [
+            {
+                "id": 1,
+                "name": "ike was updated",
+                "contact": "08145673890"
+            }
+        ]
     },
-    "patron": {
-        "id": 1,
-        "name": "Mbonu Charlie",
-        "contact": "08132468741"
+    "_links": {
+        "self": {
+            "href": "http://localhost:8081/api/authors?page=0&size=2000&sort=name,asc"
+        }
     },
-    "librarian": {
-        "id": 3,
-        "email": "johnny2@gmail.com",
-        "name": "John Prince"
+    "page": {
+        "size": 2000,
+        "totalElements": 1,
+        "totalPages": 1,
+        "number": 0
     }
 }
+
 ```
+
+> **GET:** `http://localhost:8081/api/authors/{id}`
+ - Returns  a single Author.
+```
+{
+    "id": 1,
+    "name": "ike was updated",
+    "contact": "08145673890"
+}
+
+```
+> **DELETE:** `http://localhost:8081/api/authors/{id}`
+ - Deletes an Author with id.
 
 ### 3. Book
 - A Book is a single book that contains an Author and a Genre
