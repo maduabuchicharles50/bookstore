@@ -1,12 +1,8 @@
 package com.charles.bookstore.controllers;
 
 import com.charles.bookstore.dto.BookDto;
-import com.charles.bookstore.entity.Author;
 import com.charles.bookstore.entity.Book;
-import com.charles.bookstore.entity.Genre;
-import com.charles.bookstore.repository.AuthorRepository;
 import com.charles.bookstore.repository.BookRepository;
-import com.charles.bookstore.repository.GenreRepository;
 import com.charles.bookstore.request.BookRequest;
 import com.charles.bookstore.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;

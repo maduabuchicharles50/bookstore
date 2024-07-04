@@ -1,7 +1,6 @@
 package com.charles.bookstore.controllers;
 
 
-import com.charles.bookstore.dto.AuthorDto;
 import com.charles.bookstore.dto.GenreDto;
 import com.charles.bookstore.entity.Genre;
 import com.charles.bookstore.repository.GenreRepository;
