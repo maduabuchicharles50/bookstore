@@ -5,11 +5,15 @@ import com.charles.bookstore.entity.Book;
 import com.charles.bookstore.repository.BookRepository;
 import com.charles.bookstore.request.BookRequest;
 import com.charles.bookstore.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,29 +27,30 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("/books")
-    PagedModel<EntityModel<BookDto>> index(
+    ResponseEntity<PagedModel<EntityModel<BookDto>>> index(
             @PageableDefault(page = 0, size = Integer.MAX_VALUE, sort = {"publicationYear"}) Pageable paging) {
 
-        return bookService.getAllBooks(paging);
+        return new ResponseEntity<>( bookService.getAllBooks(paging), HttpStatus.OK);
     }
 
     @GetMapping("/books/{id}")
-    BookDto show(@PathVariable Long id) {
-        return bookService.getBook(id);
+    ResponseEntity<BookDto> show(@PathVariable Long id) {
+        return new ResponseEntity<>(bookService.getBook(id),HttpStatus.OK);
     }
 
     @PostMapping("/books")
-    BookDto store(@RequestBody BookRequest request) {
-        return bookService.addBook(request);
+    ResponseEntity<BookDto> store(@RequestBody @Valid BookRequest request) {
+        return new ResponseEntity<>(bookService.addBook(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/books/{id}")
-    BookDto update(@RequestBody BookRequest newBook, @PathVariable Long id) {
-      return bookService.updateBook(newBook,id);
+    ResponseEntity<BookDto>update(@RequestBody BookRequest newBook, @PathVariable Long id) {
+      return new ResponseEntity<>(bookService.updateBook(newBook,id), HttpStatus.OK);
     }
 
     @DeleteMapping("/books/{id}")
-    void delete(@PathVariable Long id) {
-         bookService.deleteBook(id);
+    ResponseEntity<Void> delete(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package com.charles.bookstore.service;
 
 import com.charles.bookstore.dto.AuthorDto;
 import com.charles.bookstore.entity.Author;
+import com.charles.bookstore.exception.ModelNotFoundException;
 import com.charles.bookstore.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ public class AuthorService {
     }
 
     public AuthorDto getAuthor(Long id) {
-        return new AuthorDto(authorRepository.findById(id).get());
+        return new AuthorDto(authorRepository.findById(id).orElseThrow(() -> new ModelNotFoundException(Author.class, id)));
     }
 
     public AuthorDto createAuthors(Author author) {
@@ -35,7 +36,7 @@ public class AuthorService {
     }
 
     public AuthorDto updateAuthor(Author newAuthor, Long id) {
-        var author = authorRepository.findById(id).get();
+        var author = authorRepository.findById(id).orElseThrow(() -> new ModelNotFoundException(Author.class, id));
 
         if (!author.getName().equals(newAuthor.getName())) {
             author.setName(newAuthor.getName());

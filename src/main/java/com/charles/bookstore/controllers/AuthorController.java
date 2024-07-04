@@ -4,11 +4,14 @@ import com.charles.bookstore.dto.AuthorDto;
 import com.charles.bookstore.entity.Author;
 import com.charles.bookstore.repository.AuthorRepository;
 import com.charles.bookstore.service.AuthorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,25 +25,25 @@ public class AuthorController {
     private AuthorRepository authorRepository;
 
     @GetMapping("/authors")
-    PagedModel<EntityModel<AuthorDto>> index(
+    ResponseEntity<PagedModel<EntityModel<AuthorDto>>> index(
             @PageableDefault(page = 0, size = Integer.MAX_VALUE, sort = {"name"}) Pageable paging) {
-        return authorService.getAllAuthors(paging);
-    }
+        return new ResponseEntity<>(authorService.getAllAuthors(paging), HttpStatus.OK);    }
     @GetMapping("/authors/{id}")
-    AuthorDto show(@PathVariable Long id) {
-        return authorService.getAuthor(id);
+    ResponseEntity<AuthorDto> show(@PathVariable Long id) {
+        return new ResponseEntity<>(authorService.getAuthor(id), HttpStatus.OK);
     }
     @PostMapping("/authors")
-    AuthorDto store(@RequestBody Author author) {
-        return authorService.createAuthors(author);
+    ResponseEntity<AuthorDto> store(@RequestBody @Valid Author author) {
+        return new ResponseEntity<>(authorService.createAuthors(author), HttpStatus.CREATED);
     }
     @PutMapping("/authors/{id}")
-    AuthorDto update(@RequestBody Author newAuthor, @PathVariable Long id) {
-        return authorService.updateAuthor(newAuthor,id);
+    ResponseEntity<AuthorDto> update(@RequestBody Author newAuthor, @PathVariable Long id) {
+        return new ResponseEntity<>( authorService.updateAuthor(newAuthor,id), HttpStatus.OK);
     }
     @DeleteMapping("/authors/{id}")
-    void delete(@PathVariable Long id) {
+    ResponseEntity<Void> delete(@PathVariable Long id) {
         authorService.deleteAuthor(id);
+       return new ResponseEntity<>( HttpStatus.OK);
     }
 }
 
