@@ -1,9 +1,16 @@
 package com.charles.bookstore.controllers;
 
 
+import com.charles.bookstore.dto.AuthorDto;
+import com.charles.bookstore.dto.GenreDto;
 import com.charles.bookstore.entity.Genre;
 import com.charles.bookstore.repository.GenreRepository;
+import com.charles.bookstore.service.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,36 +20,30 @@ import java.util.List;
 public class GenreController {
     @Autowired
     private GenreRepository genreRepository;
+    @Autowired
+    private GenreService genreService;
 
     @GetMapping("/genres")
-    List<Genre> index() {
-        return genreRepository.findAll();
+    PagedModel<EntityModel<GenreDto>> index(
+            @PageableDefault(page = 0, size = Integer.MAX_VALUE, sort = {"type"}) Pageable paging) {
+        return genreService.getAllGenres(paging);
     }
 
     @GetMapping("/genres/{id}")
-    Genre show(@PathVariable Long id) {
-        return genreRepository.findById(id).get();
+    GenreDto show(@PathVariable Long id) {
+        return genreService.getGenre(id);
     }
-
     @PostMapping("/genres")
-    Genre store(@RequestBody Genre genre) {
-        return genreRepository.save(genre);
+    GenreDto store(@RequestBody Genre genre) {
+        return genreService.createGenre(genre);
     }
-
     @PutMapping("/genres/{id}")
-    Genre update(@RequestBody Genre newGenre, @PathVariable Long id) {
-        var genre = genreRepository.findById(id).get();
-
-        if (!genre.getType().equals(newGenre.getType())) {
-            genre.setType(newGenre.getType());
-        }
-
-        return genreRepository.save(genre);
+    GenreDto update(@RequestBody Genre newGenre, @PathVariable Long id) {
+      return genreService.updateGenre(newGenre,id);
     }
-
     @DeleteMapping("/genres/{id}")
     void delete(@PathVariable Long id) {
-        genreRepository.deleteById(id);
+        genreService.deleteGenre(id);
     }
 }
 
