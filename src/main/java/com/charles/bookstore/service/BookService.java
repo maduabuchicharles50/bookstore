@@ -4,6 +4,7 @@ import com.charles.bookstore.dto.BookDto;
 import com.charles.bookstore.entity.Author;
 import com.charles.bookstore.entity.Book;
 import com.charles.bookstore.entity.Genre;
+import com.charles.bookstore.exception.ModelNotFoundException;
 import com.charles.bookstore.repository.AuthorRepository;
 import com.charles.bookstore.repository.BookRepository;
 import com.charles.bookstore.repository.GenreRepository;
@@ -34,21 +35,21 @@ public class BookService {
     }
 
     public BookDto getBook(Long id) {
-        return new BookDto(bookRepository.findById(id).get());
+        return new BookDto(bookRepository.findById(id).orElseThrow(() -> new ModelNotFoundException(Book.class, id)));
     }
 
     public BookDto addBook(BookRequest request) {
-        Author author = authorRepository.findById(request.authorId).orElseThrow();
-        Genre genre = genreRepository.findById(request.genreId).orElseThrow();
-        Book book = new Book(request.title,author,genre,request.isbn,request.publicationYear);
+        Author author = authorRepository.findById(request.authorId).orElseThrow(() -> new ModelNotFoundException(Author.class, request.authorId));
+        Genre genre = genreRepository.findById(request.genreId).orElseThrow(() -> new ModelNotFoundException(Genre.class, request.genreId));
+        Book book = new Book(request.title, author, genre, request.isbn, request.publicationYear);
 
         return new BookDto(bookRepository.save(book));
     }
 
     public BookDto updateBook(BookRequest newBook, Long id) {
-        var book = bookRepository.findById(id).get();
-        var genre = genreRepository.findById(newBook.genreId).get();
-        var author = authorRepository.findById(newBook.authorId).get();
+        var book = bookRepository.findById(id).orElseThrow(() -> new ModelNotFoundException(Book.class, id));
+        var genre = genreRepository.findById(newBook.genreId).orElseThrow(() -> new ModelNotFoundException(Genre.class, newBook.genreId));
+        var author = authorRepository.findById(newBook.authorId).orElseThrow(() -> new ModelNotFoundException(Author.class, newBook.authorId));
 
         if (!book.getTitle().equals(newBook.title)) {
             book.setTitle(newBook.title);
