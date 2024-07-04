@@ -1,5 +1,6 @@
 package com.charles.bookstore.controllers;
 
+import com.charles.bookstore.dto.BookDto;
 import com.charles.bookstore.entity.Author;
 import com.charles.bookstore.entity.Book;
 import com.charles.bookstore.entity.Genre;
@@ -7,7 +8,12 @@ import com.charles.bookstore.repository.AuthorRepository;
 import com.charles.bookstore.repository.BookRepository;
 import com.charles.bookstore.repository.GenreRepository;
 import com.charles.bookstore.request.BookRequest;
+import com.charles.bookstore.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,58 +24,32 @@ public class BookController {
     @Autowired
     private BookRepository bookRepository;
     @Autowired
-    private AuthorRepository authorRepository;
-    @Autowired
-    private GenreRepository genreRepository;
+    private BookService bookService;
 
     @GetMapping("/books")
-    List<Book> index() {
-        return bookRepository.findAll();
+    PagedModel<EntityModel<BookDto>> index(
+            @PageableDefault(page = 0, size = Integer.MAX_VALUE, sort = {"publicationYear"}) Pageable paging) {
+
+        return bookService.getAllBooks(paging);
     }
 
     @GetMapping("/books/{id}")
-    Book show(@PathVariable Long id) {
-        return bookRepository.findById(id).get();
+    BookDto show(@PathVariable Long id) {
+        return bookService.getBook(id);
     }
 
     @PostMapping("/books")
-    Book store(@RequestBody BookRequest request) {
-        Author author = authorRepository.findById(request.authorId).orElseThrow();
-        Genre genre = genreRepository.findById(request.genreId).orElseThrow();
-        Book book = new Book(request.title,author,genre,request.isbn,request.publicationYear);
-
-        return bookRepository.save(book);
-
+    BookDto store(@RequestBody BookRequest request) {
+        return bookService.addBook(request);
     }
 
     @PutMapping("/books/{id}")
-    Book update(@RequestBody BookRequest newBook, @PathVariable Long id) {
-        var book = bookRepository.findById(id).get();
-        var genre = genreRepository.findById(newBook.genreId).get();
-        var author = authorRepository.findById(newBook.authorId).get();
-
-        if (!book.getTitle().equals(newBook.title)) {
-            book.setTitle(newBook.title);
-        }
-        if (!book.getAuthor().equals(author)) {
-            book.setAuthor(author);
-        }
-
-        if (!book.getGenre().equals(genre)) {
-            book.setGenre(genre);
-        }
-        if (!book.getIsbn().equals(newBook.isbn)) {
-            book.setIsbn(newBook.isbn);
-        }
-        if (!book.getPublicationYear().equals(newBook.publicationYear)) {
-            book.setPublicationYear(newBook.publicationYear);
-        }
-
-        return bookRepository.save(book);
+    BookDto update(@RequestBody BookRequest newBook, @PathVariable Long id) {
+      return bookService.updateBook(newBook,id);
     }
 
     @DeleteMapping("/books/{id}")
     void delete(@PathVariable Long id) {
-        bookRepository.deleteById(id);
+         bookService.deleteBook(id);
     }
 }

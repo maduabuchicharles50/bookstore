@@ -1,8 +1,14 @@
 package com.charles.bookstore.controllers;
 
+import com.charles.bookstore.dto.AuthorDto;
 import com.charles.bookstore.entity.Author;
 import com.charles.bookstore.repository.AuthorRepository;
+import com.charles.bookstore.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,40 +17,30 @@ import java.util.List;
 @RequestMapping("/api")
 public class AuthorController {
     @Autowired
+    private AuthorService authorService;
+    @Autowired
     private AuthorRepository authorRepository;
 
     @GetMapping("/authors")
-     List<Author> index() {
-        return authorRepository.findAll();
+    PagedModel<EntityModel<AuthorDto>> index(
+            @PageableDefault(page = 0, size = Integer.MAX_VALUE, sort = {"name"}) Pageable paging) {
+        return authorService.getAllAuthors(paging);
     }
-
     @GetMapping("/authors/{id}")
-    Author show(@PathVariable Long id) {
-        return authorRepository.findById(id).get();
+    AuthorDto show(@PathVariable Long id) {
+        return authorService.getAuthor(id);
     }
-
     @PostMapping("/authors")
-    Author store(@RequestBody Author author) {
-        return authorRepository.save(author);
+    AuthorDto store(@RequestBody Author author) {
+        return authorService.createAuthors(author);
     }
-
     @PutMapping("/authors/{id}")
-    Author update(@RequestBody Author newAuthor, @PathVariable Long id) {
-        var author = authorRepository.findById(id).get();
-
-        if (!author.getName().equals(newAuthor.getName())) {
-            author.setName(newAuthor.getName());
-        }
-        if (!author.getContact().equals(newAuthor.getContact())) {
-            author.setContact(newAuthor.getContact());
-        }
-
-        return authorRepository.save(author);
+    AuthorDto update(@RequestBody Author newAuthor, @PathVariable Long id) {
+        return authorService.updateAuthor(newAuthor,id);
     }
-
     @DeleteMapping("/authors/{id}")
     void delete(@PathVariable Long id) {
-        authorRepository.deleteById(id);
+        authorService.deleteAuthor(id);
     }
 }
 
