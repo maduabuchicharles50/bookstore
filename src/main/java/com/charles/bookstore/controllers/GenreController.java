@@ -3,6 +3,7 @@ package com.charles.bookstore.controllers;
 
 import com.charles.bookstore.entity.Genre;
 import com.charles.bookstore.repository.GenreRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class GenreController {
     }
 
     @PostMapping("/genres")
-    Genre store(@RequestBody Genre genre) {
+    Genre store(@RequestBody @Valid Genre genre) {
         return genreRepository.save(genre);
     }
 

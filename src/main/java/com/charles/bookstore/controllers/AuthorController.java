@@ -2,6 +2,7 @@ package com.charles.bookstore.controllers;
 
 import com.charles.bookstore.entity.Author;
 import com.charles.bookstore.repository.AuthorRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class AuthorController {
     }
 
     @PostMapping("/authors")
-    Author store(@RequestBody Author author) {
+    Author store(@RequestBody @Valid Author author) {
         return authorRepository.save(author);
     }
 

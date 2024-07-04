@@ -7,6 +7,7 @@ import com.charles.bookstore.repository.AuthorRepository;
 import com.charles.bookstore.repository.BookRepository;
 import com.charles.bookstore.repository.GenreRepository;
 import com.charles.bookstore.request.BookRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class BookController {
     }
 
     @PostMapping("/books")
-    Book store(@RequestBody BookRequest request) {
+    Book store(@RequestBody @Valid BookRequest request) {
         Author author = authorRepository.findById(request.authorId).orElseThrow();
         Genre genre = genreRepository.findById(request.genreId).orElseThrow();
         Book book = new Book(request.title,author,genre,request.isbn,request.publicationYear);
