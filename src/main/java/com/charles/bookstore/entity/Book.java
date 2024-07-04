@@ -38,4 +38,12 @@ public class Book {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public Book(String title, Author author, Genre genre, String isbn, String publicationYear) {
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.isbn = isbn;
+        this.publicationYear = publicationYear;
+    }
 }
